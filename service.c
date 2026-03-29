@@ -1,7 +1,4 @@
-#include <windows.h>
-#include <tchar.h>
-#include <stdio.h>
-#include <string.h>
+#include "connector.h"
 
 #define SERVICE_NAME _T("MyService")
 
@@ -60,6 +57,15 @@ VOID WINAPI ServiceMain(DWORD argc, LPTSTR *argv)
 
     UpdateStatus(SERVICE_RUNNING);
     Log("Service started");
+    CURL *curl = curl_easy_init(); // This function allocates and returns an easy handle.
+    if(!curl){
+        Log("curl_easy_init failed");
+        Log("Service stopped");
+        curl_easy_cleanup(curl);
+        UpdateStatus(SERVICE_STOPPED);
+        return;
+    }
+
 
     // MAIN LOOP
     while (WaitForSingleObject(g_StopEvent, 5000) != WAIT_OBJECT_0)
@@ -68,6 +74,7 @@ VOID WINAPI ServiceMain(DWORD argc, LPTSTR *argv)
     }
 
     Log("Service stopped");
+    curl_easy_cleanup(curl); // It closes down and frees all resources previously associated with this easy handle.
     UpdateStatus(SERVICE_STOPPED);
 }
 
