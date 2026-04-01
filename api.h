@@ -4,8 +4,9 @@
 #include <windows.h>
 #include <tchar.h>
 #include <string.h>
+#include <time.h>
 
 
 
 //
-int initialconnect();
+int getData();

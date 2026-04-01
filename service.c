@@ -1,4 +1,5 @@
-#include "connector.h"
+#include "api.h"
+#include "service.h"
 
 #define SERVICE_NAME _T("MyService")
 
@@ -71,6 +72,8 @@ VOID WINAPI ServiceMain(DWORD argc, LPTSTR *argv)
     while (WaitForSingleObject(g_StopEvent, 5000) != WAIT_OBJECT_0)
     {
         Log("Service working...");
+        getData();
+        sleep(10000);
     }
 
     Log("Service stopped");
