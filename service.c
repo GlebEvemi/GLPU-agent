@@ -73,7 +73,7 @@ VOID WINAPI ServiceMain(DWORD argc, LPTSTR *argv)
     {
         Log("Service working...");
         getData();
-        sleep(10000);
+        Sleep(10000);
     }
 
     Log("Service stopped");

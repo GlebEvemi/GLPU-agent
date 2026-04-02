@@ -1,4 +1,4 @@
-Build: gcc service.c -o MyService.exe -ladvapi32
+Build: gcc service.c api.c -o MyService.exe -IC:\Users\lee\Downloads\curl-8.19.0_5-win64-mingw\include -LC:\Users\lee\Downloads\curl-8.19.0_5-win64-mingw\lib -lcurl -ladvapi32 -lwinmm -lcrypt3
 
 
 1) MyService.exe install
@@ -9,3 +9,5 @@ Or -> net start MyService
 3) MyService.exe stop
 
 4) MyService.exe stop
+
+

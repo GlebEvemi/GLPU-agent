@@ -10,3 +10,5 @@
 
 //
 int getData();
+
+size_t gotData(char *buffer, size_t itemsize, size_t nitems, void *ignore);
