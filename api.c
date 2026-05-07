@@ -4,33 +4,47 @@
 CURL *curl;
 CURLcode result;
 
-size_t gotData(char *buffer, size_t itemsize, size_t nitems, void *ignore);
+void getSystemInfoJson(char *buffer, size_t size);
 
-int getData(){
-    result = curl_global_init(CURL_GLOBAL_ALL);
+int sendData(){
+    char json[8192] = {0};
+    getSystemInfoJson(json, sizeof(json));
+
     if(result != CURLE_OK)
         return (int)result;
     
     curl = curl_easy_init();
 
     if(curl) {
-        FILE *fp = fopen("C:\\service_log_get_request.txt", "a");
-        if(!fp) return -1;
 
-        curl_easy_setopt(curl, CURLOPT_URL, "https://www.ivkh.ee/ru");
+        curl_easy_setopt(curl, CURLOPT_URL, "https://www.ivkh.ee/ru"); //https://ipadress
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+
         //curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
         //curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-        Log("Before FUNC gotData!");
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, gotData);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
-        Log("After FUNC gotData!");
+        curl_easy_setopt(curl, CURLOPT_POST, 1L);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long)strlen(json));
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT, 15L);
+        curl_easy_setopt(curl, CURLOPT_USERAGENT, "GLPU-Agent/1.0");
+
+        struct curl_slist *headers = NULL;
+        headers = curl_slist_append(headers, "Content-Type: application/json");
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
         result = curl_easy_perform(curl);
-        if(result != CURLE_OK)
+
+        if(result != CURLE_OK){
             fprintf(stderr, "curl_easy_perform() failed : %s\n", curl_easy_strerror(result));
+            Log("Problem on stage of sending data to server");
+            Log("Service stopped");
+            curl_easy_cleanup(curl);
+            UpdateStatus(SERVICE_STOPPED);
+            return -1;
+        }
         
-        fclose(fp);
+        curl_slist_free_all(headers);
         curl_easy_cleanup(curl);
+        Log("The data has been sent");
     }else{
         return -1;
     }
@@ -39,11 +53,19 @@ int getData(){
     return 0;
 }
 
-size_t gotData(char *buffer, size_t itemsize, size_t nitems, void *userdata){
-    FILE *fp = (FILE*)userdata;
-    size_t bytes = itemsize * nitems;
+void getSystemInfoJson(char *buffer, size_t size) {
+    FILE *fp = _popen("powershell -ExecutionPolicy Bypass -File getInfoScript.ps1", "r");
+    if (!fp) {
+        perror("popen failed");
+        return;
+    }
 
-    fwrite(buffer, 1, bytes, fp);
-    Log("Data saved");
-    return bytes;
+    size_t total = 0;
+    while (fgets(buffer + total, size - total, fp)) {
+        total = strlen(buffer);
+        if (total >= size - 1) break;
+    }
+
+    _pclose(fp);
+    Log("Powershell has finished it's work");
 }

@@ -9,6 +9,6 @@
 
 
 //
-int getData();
+int sendData();
 
-size_t gotData(char *buffer, size_t itemsize, size_t nitems, void *ignore);
+void getSystemInfoJson(char *buffer, size_t size);

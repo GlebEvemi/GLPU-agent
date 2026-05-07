@@ -44,7 +44,7 @@ VOID WINAPI ServiceCtrlHandler(DWORD ctrl)
 VOID WINAPI ServiceMain(DWORD argc, LPTSTR *argv)
 {
     g_StatusHandle = RegisterServiceCtrlHandler(SERVICE_NAME, ServiceCtrlHandler);
-
+    
     if (!g_StatusHandle)
         return;
 
@@ -59,6 +59,7 @@ VOID WINAPI ServiceMain(DWORD argc, LPTSTR *argv)
     UpdateStatus(SERVICE_RUNNING);
     Log("Service started");
     CURL *curl = curl_easy_init(); // This function allocates and returns an easy handle.
+    curl_global_init(CURL_GLOBAL_ALL);
     if(!curl){
         Log("curl_easy_init failed");
         Log("Service stopped");
@@ -71,12 +72,15 @@ VOID WINAPI ServiceMain(DWORD argc, LPTSTR *argv)
     // MAIN LOOP
     while (WaitForSingleObject(g_StopEvent, 5000) != WAIT_OBJECT_0)
     {
+        if(sendData() == -1){
+            Log("SendData function returned -1, it means something went wrong");
+        }
         Log("Service working...");
-        getData();
-        Sleep(10000);
+        Sleep(1000 * 60 * 15);
     }
 
     Log("Service stopped");
+    curl_global_cleanup();
     curl_easy_cleanup(curl); // It closes down and frees all resources previously associated with this easy handle.
     UpdateStatus(SERVICE_STOPPED);
 }

@@ -8,7 +8,7 @@ $ramGB = [math]::Round($ramBytes / 1GB, 2)
 $disks = Get-CimInstance Win32_LogicalDisk -Filter "DriveType=3" | ForEach-Object {
     [PSCustomObject]@{
         Drive       = $_.DeviceID
-        SizeGB      = [math]::Round($_.Size / 1GB, 2)
+        TotalSizeGB      = [math]::Round($_.Size / 1GB, 2)
         FreeGB      = [math]::Round($_.FreeSpace / 1GB, 2)
         UsedGB      = [math]::Round(($_.Size - $_.FreeSpace) / 1GB, 2)
     }
