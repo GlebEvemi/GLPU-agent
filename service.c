@@ -182,6 +182,7 @@ int StopMyService()
 // ---------------- MAIN ----------------
 int main(int argc, char *argv[])
 {
+    printf("%s -> argv[2]", argv[2]);
     if (argc > 1)
     {
         if (strcmp(argv[1], "install") == 0)
