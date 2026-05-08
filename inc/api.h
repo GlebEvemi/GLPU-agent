@@ -9,6 +9,6 @@
 
 
 //
-int sendData();
+int sendData(const char *server_url, const char *username, const char *password);
 
 void getSystemInfoJson(char *buffer, size_t size);

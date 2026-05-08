@@ -1,11 +1,13 @@
 #include "api.h"
 #include "service.h"
+#include "config.h"
 
-#define SERVICE_NAME _T("MyService")
+#define SERVICE_NAME _T("GLPU-Agent")
 
 SERVICE_STATUS g_ServiceStatus;
 SERVICE_STATUS_HANDLE g_StatusHandle;
 HANDLE g_StopEvent = NULL;
+
 
 // ---------------- LOG ----------------
 void Log(const char* msg)
@@ -57,31 +59,24 @@ VOID WINAPI ServiceMain(DWORD argc, LPTSTR *argv)
     g_StopEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
     UpdateStatus(SERVICE_RUNNING);
-    Log("Service started");
-    CURL *curl = curl_easy_init(); // This function allocates and returns an easy handle.
     curl_global_init(CURL_GLOBAL_ALL);
-    if(!curl){
-        Log("curl_easy_init failed");
-        Log("Service stopped");
-        curl_easy_cleanup(curl);
-        UpdateStatus(SERVICE_STOPPED);
-        return;
-    }
+    Log("Service started");
 
 
     // MAIN LOOP
     while (WaitForSingleObject(g_StopEvent, 5000) != WAIT_OBJECT_0)
     {
-        if(sendData() == -1){
-            Log("SendData function returned -1, it means something went wrong");
+        Config config;
+        if(loadConfig(&config) == -1) {
+            Log("Failed to load config");
         }
+        sendData(config.server_url, config.username, config.password);
         Log("Service working...");
-        Sleep(1000 * 60 * 15);
+        Sleep(10000);
     }
 
     Log("Service stopped");
     curl_global_cleanup();
-    curl_easy_cleanup(curl); // It closes down and frees all resources previously associated with this easy handle.
     UpdateStatus(SERVICE_STOPPED);
 }
 
@@ -104,7 +99,7 @@ int InstallService()
         SERVICE_NAME,
         SERVICE_ALL_ACCESS,
         SERVICE_WIN32_OWN_PROCESS,
-        SERVICE_DEMAND_START,
+        SERVICE_AUTO_START,
         SERVICE_ERROR_NORMAL,
         path,
         NULL, NULL, NULL, NULL, NULL
@@ -112,12 +107,19 @@ int InstallService()
 
     if (!hService)
     {
-        printf("CreateService failed\n");
+        DWORD err = GetLastError();
+        if (err == ERROR_SERVICE_EXISTS){
+            printf("Service already exists\n");
+        } else{
+            printf("CreateService failed: %lu\n", err);
+        }
         CloseServiceHandle(hSCM);
         return 1;
     }
 
-    printf("Service installed\n");
+    StartService(hService, 0, NULL);
+
+    printf("Service installed and started\n");
 
     CloseServiceHandle(hService);
     CloseServiceHandle(hSCM);
@@ -186,7 +188,6 @@ int StopMyService()
 // ---------------- MAIN ----------------
 int main(int argc, char *argv[])
 {
-    printf("%s -> argv[2]", argv[2]);
     if (argc > 1)
     {
         if (strcmp(argv[1], "install") == 0)
