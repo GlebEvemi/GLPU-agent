@@ -28,9 +28,9 @@ $result = @{
     CsDomain          = $computerInfo.CsDomain
     CsModel           = $computerInfo.CsModel
     csProcessorName   = $cpu.Name
-    totalRam_Gb       = "$totalRamGb GB"
-    diskTotalSize     = "$diskTotalGb GB"
-    diskFreeGb        = "$diskFreeGb GB"
+    totalRam_Gb       = $totalRamGb
+    diskTotalSize     = $diskTotalGb
+    diskFreeGb        = $diskFreeGb
 }
 
 # Convert to JSON
