@@ -17,4 +17,4 @@ all:
 	$(CC) $(SRC) -o $(OUT) $(INCLUDES) $(LIBS) $(LINK)
 
 clean:
-	del $(OUT)
+	del $(OUT) 

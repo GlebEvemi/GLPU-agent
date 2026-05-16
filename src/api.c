@@ -53,7 +53,7 @@ int sendData(const char *server_url,
 }
 
 void getSystemInfoJson(char *buffer, size_t size) {
-    FILE *fp = _popen("powershell -ExecutionPolicy Bypass -File getInfoScript.ps1", "r");
+    FILE *fp = _popen("powershell -ExecutionPolicy Bypass -File C:/glpu/getInfoScript.ps1", "r" );
     if (!fp){
         perror("popen failed");
         return;
