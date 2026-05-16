@@ -34,4 +34,4 @@ $result = @{
 }
 
 # Convert to JSON
-$result | ConvertTo-Json -Depth 3
+$result | ConvertTo-Json -Compress
