@@ -1,9 +1,0 @@
-1) MyService.exe install
-
-2) Start: MyService.exe start
-Or -> net start MyService
-
-3) MyService.exe stop
-
-4) MyService.exe remove
-
