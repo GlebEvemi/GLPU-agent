@@ -13,19 +13,8 @@ int sendData(const char *server_url,
     CURL *curl = NULL;
 
     char json[8192] = {0};
-
-    Log("Before getSystemInfoJson");
-
     getSystemInfoJson(json, sizeof(json));
 
-FILE *f = fopen("C:\\service_log_json.txt", "a");
-if (f)
-{
-    fprintf(f, "\n===== JSON SENT =====\n");
-    fprintf(f, "%s\n", json);
-    fprintf(f, "=====================\n");
-    fclose(f);
-}   
     curl = curl_easy_init();
 
     if(!curl)
@@ -76,5 +65,4 @@ void getSystemInfoJson(char *buffer, size_t size) {
     }
 
     _pclose(fp);
-    Log("Powershell has finished it's work");
 }

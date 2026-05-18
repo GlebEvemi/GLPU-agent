@@ -33,7 +33,7 @@ VOID WINAPI ServiceCtrlHandler(DWORD ctrl)
     switch (ctrl)
     {
     case SERVICE_CONTROL_STOP:
-        Log("STOP received");
+        //Log("STOP received");
         UpdateStatus(SERVICE_STOP_PENDING);
         SetEvent(g_StopEvent);
         break;
@@ -60,7 +60,7 @@ VOID WINAPI ServiceMain(DWORD argc, LPTSTR *argv)
 
     UpdateStatus(SERVICE_RUNNING);
     curl_global_init(CURL_GLOBAL_ALL);
-    Log("Service started");
+    //Log("Service started");
 
 
     // MAIN LOOP
@@ -68,14 +68,14 @@ VOID WINAPI ServiceMain(DWORD argc, LPTSTR *argv)
     {
         Config config;
         if(loadConfig(&config) == -1) {
-            Log("Failed to load config");
+            //Log("Failed to load config");
         }
         sendData(config.server_url, config.username, config.password);
-        Log("Service working...");
-        Sleep(10000);
+        //Log("Service working...");
+        Sleep(3600000);
     }
 
-    Log("Service stopped");
+    //Log("Service stopped");
     curl_global_cleanup();
     UpdateStatus(SERVICE_STOPPED);
 }

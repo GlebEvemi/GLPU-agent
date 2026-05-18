@@ -46,7 +46,6 @@ int loadConfig(Config *config)
        !cJSON_IsString(user) ||
        !cJSON_IsString(pass))
     {
-        printf("Invalid config format\n");
 
         cJSON_Delete(json);
         free(jsonData);
