@@ -13,8 +13,16 @@ LIBS = -LC:/Users/lee/Downloads/curl-8.19.0_5-win64-mingw/lib
 # linked libraries
 LINK = -lcurl -ladvapi32 -lwinmm -lcrypt32
 
-all:
+all: test
 	$(CC) $(SRC) -o $(OUT) $(INCLUDES) $(LIBS) $(LINK)
 
+# Run unit tests
+test:
+	@cd tests && make test
+
+# Clean build
 clean:
-	del $(OUT) 
+	del $(OUT)
+	@cd tests && make test_clean
+
+.PHONY: all clean test 
